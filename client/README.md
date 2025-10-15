@@ -1,16 +1,89 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+kejani/
+│
+├── client/                      # React (Vite + Tailwind + Firebase)
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   ├── .env                       # (for Firebase config)
+│   │
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── index.css
+│       │
+│       ├── assets/                # images, logos, icons
+│       │   ├── logo.svg
+│       │   └── hero.jpg
+│       │
+│       ├── components/
+│       │   ├── Navbar.jsx
+│       │   ├── DarkModeToggle.jsx
+│       │   ├── PropertyCard.jsx
+│       │   ├── PaymentHistoryTable.jsx
+│       │   ├── UtilityCard.jsx
+│       │   └── Footer.jsx
+│       │
+│       ├── context/
+│       │   ├── ThemeContext.jsx
+│       │   ├── AuthContext.jsx
+│       │   └── FirebaseContext.jsx
+│       │
+│       ├── pages/
+│       │   ├── Home.jsx
+│       │   ├── Login.jsx
+│       │   ├── RegisterTenant.jsx
+│       │   ├── RegisterLandlord.jsx
+│       │   ├── DashboardTenant.jsx
+│       │   ├── DashboardLandlord.jsx
+│       │   ├── DashboardAgent.jsx
+│       │   ├── Properties.jsx
+│       │   └── About.jsx
+│       │
+│       ├── routes/
+│       │   └── ProtectedRoute.jsx
+│       │
+│       ├── services/
+│       │   ├── firebase.js        # Firebase init (Auth + Firestore)
+│       │   ├── api.js             # Communicates with Flask backend
+│       │   └── auth.js            # Firebase auth helpers
+│       │
+│       └── utils/
+│           ├── formatCurrency.js
+│           ├── calculateBalance.js
+│           └── roleGuard.js
+│
+├── server/                       # Flask API
+│   ├── app.py                     # main entry point
+│   ├── requirements.txt
+│   ├── .env                       # (Firebase admin creds + M-Pesa API keys)
+│   │
+│   ├── instance/
+│   │   └── config.py              # secret config (Flask settings)
+│   │
+│   ├── utils/
+│   │   ├── firebase_admin.py      # Firebase Admin init
+│   │   ├── mpesa.py               # M-Pesa integration helpers
+│   │   └── auth_middleware.py     # verify Firebase token middleware
+│   │
+│   ├── routes/
+│   │   ├── auth_routes.py         # login/signup verification with Firebase
+│   │   ├── property_routes.py     # create property, list tenants
+│   │   ├── payment_routes.py      # rent payment via M-Pesa + webhook
+│   │   ├── invitation_routes.py   # landlord invites tenants
+│   │   └── report_routes.py       # generate reports
+│   │
+│   ├── models/
+│   │   ├── property_model.py
+│   │   ├── payment_model.py
+│   │   └── user_model.py
+│   │
+│   └── tests/
+│       ├── test_auth.py
+│       ├── test_payment.py
+│       └── test_property.py
+│
+├── firebase.json                  # for Firebase hosting (optional)
+├── firestore.rules                # security rules
+└── README.md                      # project setup + documentation
