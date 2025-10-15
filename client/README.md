@@ -87,3 +87,12 @@ kejani/
 ├── firebase.json                  # for Firebase hosting (optional)
 ├── firestore.rules                # security rules
 └── README.md                      # project setup + documentation
+
+
+| Login Method            | Redirect Route        | Role     |
+| ----------------------- | --------------------- | -------- |
+| `golfheights@house.com` | `/dashboard/landlord` | Landlord |
+| `agent@kejani.com`      | `/dashboard/agent`    | Agent    |
+| Any other email         | `/dashboard/tenant`   | Tenant   |
+| Anonymous               | `/dashboard/tenant`   | Tenant   |
+| Google login            | `/dashboard/tenant`   | Tenant   |

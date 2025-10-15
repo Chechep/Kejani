@@ -1,36 +1,42 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import GoogleLogo from "../assets/google_logo.svg"; // official logo
+import { useAuth } from "../context/AuthContext";
+import GoogleLogo from "../assets/google-logo.svg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { loginWithEmail, loginAnonymously, loginWithGoogle, user } = useAuth();
 
   const handleLogin = (e) => {
     e.preventDefault();
+    loginWithEmail(email, password);
 
-    // 🔐 Landlord login check (Admin)
-    if (email === "admin@kejani.com") {
+    // Redirect based on mock role rules
+    if (email === "golfheights@house.com") {
       navigate("/dashboard/landlord");
-    } else if (email && password) {
-      // Normal tenant login simulation
+    } else if (email === "agent@kejani.com") {
+      navigate("/dashboard/agent");
+    } else {
       navigate("/dashboard/tenant");
     }
   };
 
   const handleAnonymousLogin = () => {
+    loginAnonymously();
     navigate("/dashboard/tenant");
   };
 
   const handleGoogleLogin = () => {
-    alert("Google Login will be added with Firebase later");
+    loginWithGoogle();
+    navigate("/dashboard/tenant");
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-black">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-black transition-all duration-300">
       <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md w-full max-w-md">
         <h2 className="text-3xl font-semibold text-center text-black dark:text-white mb-6">
           Welcome Back to <span className="text-blue-600">Kejani</span>
@@ -70,6 +76,7 @@ const Login = () => {
             </button>
           </div>
 
+          {/* Login button */}
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
@@ -84,7 +91,9 @@ const Login = () => {
           className="w-full flex items-center justify-center gap-2 mt-4 border py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
         >
           <img src={GoogleLogo} alt="Google" className="w-5 h-5" />
-          <span className="text-black dark:text-white">Sign in with Google</span>
+          <span className="text-black dark:text-white">
+            Sign in with Google
+          </span>
         </button>
 
         {/* Anonymous Login */}

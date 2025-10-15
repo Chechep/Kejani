@@ -1,22 +1,45 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import GoogleLogo from "../assets/google_logo.svg";
+import GoogleLogo from "../assets/google-logo.svg";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { registerWithEmail, loginWithGoogle, loginAnonymously } = useAuth();
 
   const handleSignup = (e) => {
     e.preventDefault();
-    // Redirect to tenant dashboard after signup
-    navigate("/dashboard/tenant");
+    try {
+      registerWithEmail(email, password);
+      navigate("/dashboard/tenant");
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Signup failed. Please try again.");
+    }
   };
 
   const handleGoogleSignup = () => {
-    alert("Google Signup will be added with Firebase later");
+    try {
+      loginWithGoogle();
+      navigate("/dashboard/tenant");
+    } catch (error) {
+      console.error("Google signup error:", error);
+      alert("Google signup failed.");
+    }
+  };
+
+  const handleAnonymousSignup = () => {
+    try {
+      loginAnonymously();
+      navigate("/dashboard/tenant");
+    } catch (error) {
+      console.error("Anonymous signup error:", error);
+      alert("Anonymous signup failed.");
+    }
   };
 
   return (
@@ -75,6 +98,14 @@ const Signup = () => {
         >
           <img src={GoogleLogo} alt="Google" className="w-5 h-5" />
           <span className="text-black dark:text-white">Sign up with Google</span>
+        </button>
+
+        {/* Anonymous Signup */}
+        <button
+          onClick={handleAnonymousSignup}
+          className="w-full flex items-center justify-center gap-2 mt-4 border border-blue-400 text-blue-600 dark:text-blue-400 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 transition"
+        >
+          Continue as Guest
         </button>
 
         <p className="text-center text-gray-600 dark:text-gray-400 mt-6">
