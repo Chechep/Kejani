@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -12,40 +13,42 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 const App = () => {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/register" element={<RegisterTenant />} />
-
-        {/* Protected Routes with Role Restrictions */}
-        <Route
-          path="/dashboard/tenant"
-          element={
-            <ProtectedRoute allowedRoles={["tenant"]}>
-              <DashboardTenant />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/landlord"
-          element={
-            <ProtectedRoute allowedRoles={["landlord"]}>
-              <DashboardLandlord />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/agent"
-          element={
-            <ProtectedRoute allowedRoles={["agent"]}>
-              <DashboardAgent />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black">
+        <Navbar />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/register" element={<RegisterTenant />} />
+            <Route
+              path="/dashboard/tenant"
+              element={
+                <ProtectedRoute allowedRoles={["tenant"]}>
+                  <DashboardTenant />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/landlord"
+              element={
+                <ProtectedRoute allowedRoles={["landlord"]}>
+                  <DashboardLandlord />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/agent"
+              element={
+                <ProtectedRoute allowedRoles={["agent"]}>
+                  <DashboardAgent />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 };

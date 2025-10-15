@@ -65,14 +65,14 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-6 bg-white dark:bg-gray-900 shadow-inner">
-        <h2 className="text-3xl font-bold text-center mb-12">Powerful Features</h2>
+      <section className="py-16 px-6 bg-white dark:bg-gray-900">
+        <h2 className="text-3xl font-bold text-center mb-12"> Features</h2>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex flex-col items-start p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ease-in-out border border-transparent hover:border-blue-500/20"
+              className="flex flex-col items-start p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition"
             >
               <feature.icon className="text-blue-600 dark:text-blue-400 mb-4" size={32} />
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
