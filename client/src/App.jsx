@@ -1,7 +1,9 @@
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import RegisterTenant from "./pages/RegisterTenant";
@@ -13,14 +15,19 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 const App = () => {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black">
+      {/* Full-screen flex column layout */}
+      <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
         <Navbar />
+        
+        {/* Main content grows to fill space between Navbar and Footer */}
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/about" element={<About />} />
             <Route path="/register" element={<RegisterTenant />} />
+
             <Route
               path="/dashboard/tenant"
               element={
@@ -47,6 +54,7 @@ const App = () => {
             />
           </Routes>
         </main>
+
         <Footer />
       </div>
     </Router>

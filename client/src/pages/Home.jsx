@@ -38,9 +38,8 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-800 dark:text-gray-100">
       {/* Hero Section */}
       <section className="text-center py-20 px-6">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">Built for Everyone</h1>
         <p className="text-lg md:text-xl max-w-2xl mx-auto">
-          Whether you're renting or managing properties, <span className="font-semibold">RentLink</span> has the tools you need to succeed.
+          Whether you're renting or managing properties, <span className="font-bold">RentLink</span> has the tools you need to succeed.
         </p>
       </section>
 
@@ -58,7 +57,7 @@ const Home = () => {
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-6 w-full md:w-1/3">
             <h3 className="text-xl font-semibold mb-2">For Landlords</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Manage multiple properties, track payments, and analyze revenue in real-time.
+              Manage multiple properties, track payments and analyze revenue in real-time.
             </p>
           </div>
         </div>
@@ -74,7 +73,7 @@ const Home = () => {
               key={index}
               className="flex flex-col items-start p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition"
             >
-              <feature.icon className="text-blue-600 dark:text-blue-400 mb-4" size={32} />
+              <feature.icon className="text-black dark:text-blue-300 mb-4" size={32} />
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
               <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
             </div>

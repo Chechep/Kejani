@@ -26,10 +26,9 @@ const Navbar = () => {
     <nav className="w-full shadow-md bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 relative">
       <div className="flex items-center justify-between px-6 py-4">
         <h1
-          className="text-2xl font-bold text-black dark:text-white cursor-pointer"
-          onClick={() => navigate("/")}
+          className="text-2xl font-bold text-black dark:text-white"
         >
-          🏠 Kejani
+          KejaLink
         </h1>
 
         {/* Desktop Links */}
@@ -42,7 +41,7 @@ const Navbar = () => {
           </Link>
 
           <Link
-            to="/about"
+            to="/About"
             className="flex items-center gap-1 hover:underline text-black dark:text-white"
           >
             <Info size={18} /> About
