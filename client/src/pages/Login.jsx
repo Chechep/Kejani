@@ -38,8 +38,8 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-black transition-all duration-300">
       <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md w-full max-w-md">
-        <h2 className="text-3xl font-semibold text-center text-black dark:text-white mb-6">
-          Welcome Back to <span className="text-blue-600">Kejani</span>
+        <h2 className="text-3xl font-semibold text-center text-gray-500 dark:text-gray-400 mb-6">
+          Welcome Back to <span className="text-black dark:text-white">KejaLink</span>
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -52,7 +52,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-black dark:text-white"
+              className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-1 focus:ring-black bg-white dark:bg-gray-800 text-black dark:text-white"
             />
           </div>
 
@@ -65,7 +65,7 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-black dark:text-white"
+              className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-1 focus:ring-black bg-white dark:bg-gray-800 text-black dark:text-white"
             />
             <button
               type="button"
@@ -79,7 +79,7 @@ const Login = () => {
           {/* Login button */}
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full flex items-center justify-center gap-2 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-800 transition"
           >
             <LogIn size={18} /> Login
           </button>
@@ -88,7 +88,7 @@ const Login = () => {
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-2 mt-4 border py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+          className="w-full flex items-center justify-center gap-2 mt-4 border py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition border-gray-400 dark:border-gray-600"
         >
           <img src={GoogleLogo} alt="Google" className="w-5 h-5" />
           <span className="text-black dark:text-white">
@@ -99,14 +99,14 @@ const Login = () => {
         {/* Anonymous Login */}
         <button
           onClick={handleAnonymousLogin}
-          className="w-full flex items-center justify-center gap-2 mt-4 bg-gray-200 dark:bg-gray-700 text-black dark:text-white py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          className="w-full flex items-center justify-center gap-2 mt-4 bg-gray-300 dark:bg-gray-700 text-black dark:text-white py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
         >
           <User size={18} /> Continue as Guest
         </button>
 
         <p className="text-center text-gray-600 dark:text-gray-400 mt-6">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-blue-600 hover:underline">
+          <Link to="/signup" className="text-black dark:text-white font-semibold hover:underline">
             Sign up
           </Link>
         </p>
