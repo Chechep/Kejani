@@ -73,24 +73,24 @@ const Login = () => {
         </h2>
 
         {/* Quick Test Buttons - Remove in production */}
-        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">Quick Test Logins:</p>
           <div className="flex gap-2 flex-wrap">
             <button 
               onClick={() => handleQuickLogin("tenant@kejani.com")}
-              className="px-2 py-1 text-xs bg-green-500 text-white rounded"
+              className="px-2 py-1 text-xs bg-gray-500 text-white hover:bg-black rounded"
             >
               Tenant
             </button>
             <button 
               onClick={() => handleQuickLogin("agent@kejani.com")}
-              className="px-2 py-1 text-xs bg-blue-500 text-white rounded"
+              className="px-2 py-1 text-xs bg-gray-500 text-white hover:bg-black rounded"
             >
               Agent
             </button>
             <button 
               onClick={() => handleQuickLogin("golfheights@house.com")}
-              className="px-2 py-1 text-xs bg-purple-500 text-white rounded"
+              className="px-2 py-1 text-xs bg-gray-500 text-white hover:bg-black rounded"
             >
               Landlord
             </button>
