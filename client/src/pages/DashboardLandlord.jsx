@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Plus, UserPlus, Users } from "lucide-react";
 
 const DashboardLandlord = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("tenants");
   const [selectedReport, setSelectedReport] = useState("monthly");
+  const [showAddTenantModal, setShowAddTenantModal] = useState(false);
 
   // Mock data - in real app, this would come from API
   const tenants = [
@@ -51,6 +53,13 @@ const DashboardLandlord = () => {
     { id: "2", tenantId: "2", tenantName: "Jane Smith", type: "sms", subject: "Payment Confirmation", date: "2024-02-01", status: "read" },
   ];
 
+  // Mock available tenants from tenant dashboard
+  const availableTenants = [
+    { id: "t1", name: "Alice Brown", email: "alice@example.com", phone: "+254712345678", preferredRent: 1000 },
+    { id: "t2", name: "Bob Wilson", email: "bob@example.com", phone: "+254723456789", preferredRent: 1200 },
+    { id: "t3", name: "Carol Davis", email: "carol@example.com", phone: "+254734567890", preferredRent: 1500 },
+  ];
+
   const monthlyIncome = properties.reduce((sum, prop) => sum + prop.monthlyRent, 0);
   const totalBalance = tenants.reduce((sum, tenant) => sum + tenant.balance, 0);
 
@@ -76,6 +85,12 @@ const DashboardLandlord = () => {
       case "pending": return "bg-yellow-100 text-yellow-800";
       default: return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const handleAssignTenant = (tenant) => {
+    // In real app, this would make an API call to assign the tenant
+    alert(`Assigning ${tenant.name} as new tenant`);
+    setShowAddTenantModal(false);
   };
 
   return (
@@ -127,7 +142,11 @@ const DashboardLandlord = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Tenant Management</h2>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            <button 
+              onClick={() => setShowAddTenantModal(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <UserPlus size={20} />
               Add Tenant
             </button>
           </div>
@@ -323,6 +342,80 @@ const DashboardLandlord = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Add Tenant Modal */}
+      {showAddTenantModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <Users size={24} />
+                  Add Tenant from Tenant Dashboard
+                </h3>
+                <button 
+                  onClick={() => setShowAddTenantModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Search Tenants</label>
+                  <input 
+                    type="text" 
+                    placeholder="Search by name or email..."
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+                  />
+                </div>
+
+                <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+                  <h4 className="font-semibold mb-3">Available Tenants from Dashboard</h4>
+                  <div className="space-y-3">
+                    {availableTenants.map(tenant => (
+                      <div key={tenant.id} className="flex justify-between items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                        <div>
+                          <p className="font-medium">{tenant.name}</p>
+                          <p className="text-sm text-gray-500">{tenant.email} • {tenant.phone}</p>
+                          <p className="text-sm text-blue-500">Preferred Rent: ${tenant.preferredRent}</p>
+                        </div>
+                        <button
+                          onClick={() => handleAssignTenant(tenant)}
+                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center gap-2"
+                        >
+                          <UserPlus size={16} />
+                          Add Tenant
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    onClick={() => setShowAddTenantModal(false)}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      // In real app, this would open a form to create new tenant
+                      alert("Open new tenant registration form");
+                    }}
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center gap-2"
+                  >
+                    <Plus size={16} />
+                    Register New Tenant
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

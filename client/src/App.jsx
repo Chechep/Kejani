@@ -12,6 +12,7 @@ import DashboardLandlord from "./pages/DashboardLandlord";
 import DashboardAgent from "./pages/DashboardAgent";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Notifications from "./pages/Notifications";
+import TenantOnboarding from './pages/TenantOnboarding';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/register" element={<RegisterTenant />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/tenant-onboarding" element={<TenantOnboarding />} />
 
             {/* Protected routes */}
             <Route
