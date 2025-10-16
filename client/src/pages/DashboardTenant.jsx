@@ -13,7 +13,8 @@ import {
   Users,
   Send,
   Home,
-  Filter
+  Filter,
+  Smartphone
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +27,7 @@ const DashboardTenant = () => {
   const [paymentAmount, setPaymentAmount] = useState("");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [paymentDetails, setPaymentDetails] = useState({});
   const [showChatbot, setShowChatbot] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -35,6 +37,7 @@ const DashboardTenant = () => {
   const [agents, setAgents] = useState([]);
   const [invites, setInvites] = useState([]);
   const [daysUntilPayment, setDaysUntilPayment] = useState(0);
+  const [showToast, setShowToast] = useState(false);
 
   const utilities = { 
     water: { amount: 50, checked: false },
@@ -120,31 +123,70 @@ const DashboardTenant = () => {
     setInvites(mockInvites);
   }, []);
 
-  const calculateTotal = () => {
-    let total = parseInt(paymentAmount) || 0;
-    Object.values(selectedUtilities).forEach(utility => {
-      if (utility.checked) total += utility.amount;
-    });
-    return total;
+  // Auto-hide toast after 5 seconds
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
+  // Calculate utilities total
+  const calculateUtilitiesTotal = () => {
+    return Object.values(selectedUtilities).reduce((total, utility) => {
+      return utility.checked ? total + utility.amount : total;
+    }, 0);
+  };
+
+  // Calculate total payment amount (rent + utilities)
+  const calculateTotalPayment = () => {
+    const rentAmount = parseInt(paymentAmount) || 0;
+    const utilitiesTotal = calculateUtilitiesTotal();
+    return rentAmount + utilitiesTotal;
+  };
+
+  // Validate payment details based on selected method
+  const isPaymentDetailsValid = () => {
+    if (!selectedPaymentMethod) return false;
+
+    switch (selectedPaymentMethod) {
+      case "mpesa":
+      case "airtel":
+        return paymentDetails.phone && paymentDetails.phone.length >= 10;
+      
+      case "visa":
+        return paymentDetails.cardNumber && paymentDetails.cardNumber.replace(/\s/g, '').length === 16 &&
+               paymentDetails.expiry && paymentDetails.expiry.length === 5 &&
+               paymentDetails.cvv && paymentDetails.cvv.length === 3 &&
+               paymentDetails.name;
+      
+      default:
+        return false;
+    }
   };
 
   const handlePayment = () => {
-    if (!paymentAmount || isNaN(paymentAmount)) {
-      alert("Please enter a valid payment amount");
+    const rentAmount = parseInt(paymentAmount) || 0;
+    
+    if (!paymentAmount || isNaN(paymentAmount) || rentAmount <= 0) {
+      alert("Please enter a valid rent amount");
       return;
     }
+    
     setShowPaymentModal(true);
   };
 
   const processPayment = () => {
-    if (!selectedPaymentMethod) {
-      alert("Please select a payment method");
+    if (!selectedPaymentMethod || !isPaymentDetailsValid()) {
+      alert("Please fill all payment details correctly");
       return;
     }
     
-    const total = calculateTotal();
+    const total = calculateTotalPayment();
     
-    // Create payment notification
+    // Create payment notification with method details
     const newNotification = {
       id: Date.now(),
       message: `✅ Payment of $${total} processed via ${selectedPaymentMethod}`,
@@ -156,11 +198,19 @@ const DashboardTenant = () => {
     const existingNotifications = JSON.parse(localStorage.getItem("tenantNotifications") || "[]");
     localStorage.setItem("tenantNotifications", JSON.stringify([newNotification, ...existingNotifications]));
     
-    alert(`Payment of $${total} processed via ${selectedPaymentMethod}`);
-    setShowPaymentModal(false);
-    setPaymentAmount("");
-    setSelectedUtilities(utilities);
-    setSelectedPaymentMethod("");
+    // Show toast notification for mobile payments
+    if (selectedPaymentMethod === "mpesa" || selectedPaymentMethod === "airtel") {
+      setShowToast(true);
+    }
+    
+    // Close modal after processing
+    setTimeout(() => {
+      setShowPaymentModal(false);
+      setPaymentAmount("");
+      setSelectedUtilities(utilities);
+      setSelectedPaymentMethod("");
+      setPaymentDetails({});
+    }, 2000);
   };
 
   const sendMessage = () => {
@@ -252,6 +302,27 @@ const DashboardTenant = () => {
 
   return (
     <div className="p-6 min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-all duration-300">
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
+          <div className="bg-green-500 text-white p-4 rounded-lg shadow-lg flex items-center gap-3 max-w-sm">
+            <Smartphone className="w-6 h-6" />
+            <div>
+              <p className="font-semibold">Payment Prompt Sent</p>
+              <p className="text-sm opacity-90">
+                Check your phone to complete the payment
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowToast(false)}
+              className="text-white hover:text-gray-200 ml-auto"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -322,9 +393,6 @@ const DashboardTenant = () => {
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {daysUntilPayment}d
                   </div>
-                  <button className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm mt-1">
-                    Cancel Auto-pay
-                  </button>
                 </div>
               </div>
             </div>
@@ -335,7 +403,7 @@ const DashboardTenant = () => {
                 <span className="font-semibold text-lg">${rent}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-300">Amount to Pay:</span>
+                <span className="text-gray-600 dark:text-gray-300">Rent Amount to Pay:</span>
                 <input
                   type="number"
                   value={paymentAmount}
@@ -347,18 +415,6 @@ const DashboardTenant = () => {
                 />
               </div>
             </div>
-
-            <button
-              onClick={handlePayment}
-              disabled={!paymentAmount || paymentAmount <= 0}
-              className={`w-full mt-4 px-4 py-3 rounded-lg font-semibold transition-all ${
-                paymentAmount && paymentAmount > 0
-                  ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                  : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              {paymentAmount && paymentAmount > 0 ? `Pay $${paymentAmount}` : "Enter Amount to Pay"}
-            </button>
           </div>
 
           {/* Utilities */}
@@ -389,16 +445,74 @@ const DashboardTenant = () => {
               ))}
             </div>
             
-            {/* Total Preview */}
-            {Object.values(selectedUtilities).some(u => u.checked) && (
+            {/* Utilities Total Preview */}
+            {calculateUtilitiesTotal() > 0 && (
               <div className="mt-4 p-3 bg-green-50 dark:bg-green-900 rounded-lg border border-green-200 dark:border-green-700">
                 <div className="flex justify-between items-center">
                   <span className="text-green-800 dark:text-green-200 font-semibold">Selected Utilities Total:</span>
                   <span className="text-green-800 dark:text-green-200 font-bold text-lg">
-                    ${Object.values(selectedUtilities).reduce((sum, util) => util.checked ? sum + util.amount : sum, 0)}
+                    +${calculateUtilitiesTotal()}
                   </span>
                 </div>
               </div>
+            )}
+          </div>
+
+          {/* Payment Summary & Button */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+              <CreditCard className="text-green-500" /> Payment Summary
+            </h2>
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-600 dark:text-gray-300">Rent Amount:</span>
+                <span className="font-semibold">
+                  {paymentAmount ? `$${paymentAmount}` : "$0"}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-600 dark:text-gray-300">Utilities:</span>
+                <span className="font-semibold text-green-600">
+                  +${calculateUtilitiesTotal()}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center py-3 border-t border-gray-200 dark:border-gray-700">
+                <span className="text-lg font-semibold">Total to Pay:</span>
+                <span className="text-2xl font-bold text-green-600">
+                  ${calculateTotalPayment()}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={handlePayment}
+              disabled={!paymentAmount || parseInt(paymentAmount) <= 0}
+              className={`w-full py-4 rounded-lg font-semibold text-lg transition-all ${
+                paymentAmount && parseInt(paymentAmount) > 0
+                  ? "bg-green-600 hover:bg-green-500 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              {paymentAmount && parseInt(paymentAmount) > 0 ? (
+                <div className="flex items-center justify-center gap-2">
+                  <CreditCard size={20} />
+                  Pay ${calculateTotalPayment()}
+                  <span className="text-sm opacity-80">
+                    (Rent: ${paymentAmount} + Utilities: ${calculateUtilitiesTotal()})
+                  </span>
+                </div>
+              ) : (
+                "Enter Rent Amount to Pay"
+              )}
+            </button>
+            
+            {paymentAmount && parseInt(paymentAmount) > 0 && (
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-3">
+                💡 The payment amount includes your rent + selected utilities
+              </p>
             )}
           </div>
         </>
@@ -578,7 +692,11 @@ const DashboardTenant = () => {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Complete Payment</h3>
                 <button 
-                  onClick={() => setShowPaymentModal(false)}
+                  onClick={() => {
+                    setShowPaymentModal(false);
+                    setSelectedPaymentMethod("");
+                    setPaymentDetails({});
+                  }}
                   className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 >
                   <X size={24} />
@@ -586,48 +704,218 @@ const DashboardTenant = () => {
               </div>
 
               <div className="mb-6 text-center">
-                <p className="text-2xl font-bold text-green-600 mb-2">${calculateTotal()}</p>
-                <p className="text-sm text-gray-500">
-                  Rent: ${paymentAmount} + Utilities: ${calculateTotal() - parseInt(paymentAmount)}
-                </p>
+                <p className="text-2xl font-bold text-green-600 mb-2">${calculateTotalPayment()}</p>
+                <div className="text-sm text-gray-500 space-y-1">
+                  <p>Rent: ${paymentAmount}</p>
+                  <p>Utilities: ${calculateUtilitiesTotal()}</p>
+                </div>
               </div>
 
-              <div className="space-y-3 mb-6">
-                <h4 className="font-semibold text-lg mb-3">Select Payment Method:</h4>
-                
-                {[
-                  { id: "mpesa", name: "M-Pesa", color: "green", letter: "M" },
-                  { id: "visa", name: "Visa/MasterCard", color: "blue", letter: "V" },
-                  { id: "airtel", name: "Airtel Money", color: "red", letter: "A" }
-                ].map((method) => (
+              {/* Payment Method Selection */}
+              {!selectedPaymentMethod ? (
+                <div className="space-y-3 mb-6">
+                  <h4 className="font-semibold text-lg mb-3">Select Payment Method:</h4>
+                  
+                  {[
+                    { id: "mpesa", name: "M-Pesa", color: "green", letter: "M" },
+                    { id: "visa", name: "Visa/MasterCard", color: "blue", letter: "V" },
+                    { id: "airtel", name: "Airtel Money", color: "red", letter: "A" }
+                  ].map((method) => (
+                    <button
+                      key={method.id}
+                      onClick={() => setSelectedPaymentMethod(method.id)}
+                      className={`w-full p-4 border-2 rounded-lg flex items-center gap-4 transition-all ${
+                        selectedPaymentMethod === method.id 
+                          ? `border-${method.color}-500 bg-${method.color}-50 dark:bg-${method.color}-900 shadow-md` 
+                          : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 bg-${method.color}-500 rounded-full flex items-center justify-center text-white font-bold text-lg`}>
+                        {method.letter}
+                      </div>
+                      <span className="font-semibold">{method.name}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                /* Payment Details Form */
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className={`w-8 h-8 bg-${
+                      selectedPaymentMethod === 'mpesa' ? 'green' : 
+                      selectedPaymentMethod === 'visa' ? 'blue' : 'red'
+                    }-500 rounded-full flex items-center justify-center text-white font-bold text-sm`}>
+                      {selectedPaymentMethod === 'mpesa' ? 'M' : selectedPaymentMethod === 'visa' ? 'V' : 'A'}
+                    </div>
+                    <span className="font-semibold">
+                      {selectedPaymentMethod === 'mpesa' ? 'M-Pesa' : selectedPaymentMethod === 'visa' ? 'Visa/MasterCard' : 'Airtel Money'}
+                    </span>
+                    <button 
+                      onClick={() => {
+                        setSelectedPaymentMethod("");
+                        setPaymentDetails({});
+                      }}
+                      className="ml-auto text-sm text-blue-500 hover:text-blue-600"
+                    >
+                      Change
+                    </button>
+                  </div>
+
+                  {/* M-Pesa Payment Form */}
+                  {selectedPaymentMethod === "mpesa" && (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-lg">Enter M-Pesa Details</h4>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          placeholder="07XX XXX XXX"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                          onChange={(e) => setPaymentDetails({ ...paymentDetails, phone: e.target.value })}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enter your M-Pesa registered phone number
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                          <Smartphone size={16} />
+                          <p className="text-sm font-medium">
+                            You will receive a payment prompt on your phone
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Visa/MasterCard Payment Form */}
+                  {selectedPaymentMethod === "visa" && (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-lg">Enter Card Details</h4>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Card Number
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="1234 5678 9012 3456"
+                          maxLength="19"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+                            e.target.value = value;
+                            setPaymentDetails({ ...paymentDetails, cardNumber: value });
+                          }}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Expiry Date
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="MM/YY"
+                            maxLength="5"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onChange={(e) => {
+                              let value = e.target.value;
+                              if (value.length === 2 && !value.includes('/')) {
+                                value = value + '/';
+                                e.target.value = value;
+                              }
+                              setPaymentDetails({ ...paymentDetails, expiry: value });
+                            }}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            CVV
+                          </label>
+                          <input
+                            type="password"
+                            placeholder="123"
+                            maxLength="3"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onChange={(e) => setPaymentDetails({ ...paymentDetails, cvv: e.target.value })}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Cardholder Name
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="John Doe"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onChange={(e) => setPaymentDetails({ ...paymentDetails, name: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Airtel Money Payment Form */}
+                  {selectedPaymentMethod === "airtel" && (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-lg">Enter Airtel Money Details</h4>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          placeholder="07XX XXX XXX"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                          onChange={(e) => setPaymentDetails({ ...paymentDetails, phone: e.target.value })}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enter your Airtel Money registered phone number
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                          <Smartphone size={16} />
+                          <p className="text-sm font-medium">
+                            You will receive a payment prompt on your phone
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pay Button */}
                   <button
-                    key={method.id}
-                    onClick={() => setSelectedPaymentMethod(method.id)}
-                    className={`w-full p-4 border-2 rounded-lg flex items-center gap-4 transition-all ${
-                      selectedPaymentMethod === method.id 
-                        ? `border-${method.color}-500 bg-${method.color}-50 dark:bg-${method.color}-900 shadow-md` 
-                        : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                    onClick={processPayment}
+                    disabled={!isPaymentDetailsValid()}
+                    className={`w-full py-3 rounded-lg font-semibold text-lg transition-all mt-4 ${
+                      isPaymentDetailsValid()
+                        ? "bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl"
+                        : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
                     }`}
                   >
-                    <div className={`w-10 h-10 bg-${method.color}-500 rounded-full flex items-center justify-center text-white font-bold text-lg`}>
-                      {method.letter}
-                    </div>
-                    <span className="font-semibold">{method.name}</span>
+                    {isPaymentDetailsValid() ? `Pay $${calculateTotalPayment()}` : "Fill Payment Details"}
                   </button>
-                ))}
-              </div>
 
-              <button
-                onClick={processPayment}
-                disabled={!selectedPaymentMethod}
-                className={`w-full py-3 rounded-lg font-semibold text-lg transition-all ${
-                  selectedPaymentMethod
-                    ? "bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl"
-                    : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                {selectedPaymentMethod ? `Pay $${calculateTotal()}` : "Select Payment Method"}
-              </button>
+                  {/* Security Notice */}
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                      <Shield size={16} className="text-green-500" />
+                      <span>Your payment details are secure and encrypted</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
