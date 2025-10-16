@@ -21,33 +21,33 @@ const DashboardAgent = () => {
       owner: "David Kimani",
       totalUnits: 10,
       occupiedUnits: 8,
-      monthlyRent: 12000,
-      managementFee: 1200,
+      monthlyRent: 15000,
+      managementFee: 1500,
       tenants: [
-        { id: "1", name: "John Doe", email: "john@example.com", unit: "Unit 101", rent: 1200, status: "current", leaseEnd: "2024-12-31" },
-        { id: "2", name: "Jane Smith", email: "jane@example.com", unit: "Unit 102", rent: 1100, status: "current", leaseEnd: "2024-11-30" },
+        { id: "1", name: "Peter Kiprop", email: "peter@example.com", unit: "Unit 101", rent: 1200, status: "current", leaseEnd: "2025-12-31" },
+        { id: "2", name: "Jane Njoki", email: "jane@example.com", unit: "Unit 102", rent: 1100, status: "current", leaseEnd: "2025-11-30" },
       ]
     },
     {
       id: "2",
       name: "Sunset Villas",
       address: "456 Oak Avenue, Nairobi",
-      owner: "Sarah Johnson",
+      owner: "Sarah Cherop",
       totalUnits: 6,
       occupiedUnits: 6,
-      monthlyRent: 9000,
-      managementFee: 900,
+      monthlyRent: 10000,
+      managementFee: 1000,
       tenants: [
-        { id: "3", name: "Mike Johnson", email: "mike@example.com", unit: "Villa A", rent: 1500, status: "current", leaseEnd: "2024-10-31" },
+        { id: "3", name: "Mike Omondi", email: "mike@example.com", unit: "Villa A", rent: 1500, status: "current", leaseEnd: "2025-10-31" },
       ]
     },
   ];
 
   // Mock available tenants (in real app, this would come from your tenant database)
   const mockAvailableTenants = [
-    { id: "t1", name: "Alice Brown", email: "alice@example.com", phone: "+254712345678", preferredRent: 1000 },
-    { id: "t2", name: "Bob Wilson", email: "bob@example.com", phone: "+254723456789", preferredRent: 1200 },
-    { id: "t3", name: "Carol Davis", email: "carol@example.com", phone: "+254734567890", preferredRent: 1500 },
+    { id: "t1", name: "Alice Adhiambo", email: "alice@gmail.com", phone: "+254712345678", preferredRent: 10000 },
+    { id: "t2", name: "Bob Njuguna", email: "bob@gmail.com", phone: "+254723456789", preferredRent: 12000 },
+    { id: "t3", name: "Carol Mwende", email: "carol@gmail.com", phone: "+254734567890", preferredRent: 15000 },
   ];
 
   const totalProperties = properties.length;
@@ -113,11 +113,11 @@ const DashboardAgent = () => {
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Monthly Rent</h3>
-          <p className="text-2xl font-bold">${totalMonthlyRent}</p>
+          <p className="text-2xl font-bold">Ksh.{totalMonthlyRent}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Management Fees</h3>
-          <p className="text-2xl font-bold">${totalManagementFees}</p>
+          <p className="text-2xl font-bold">Ksh.{totalManagementFees}</p>
         </div>
       </div>
 
@@ -130,7 +130,7 @@ const DashboardAgent = () => {
               onClick={() => setActiveTab(tab)}
               className={`py-2 px-1 border-b-2 font-medium text-sm capitalize ${
                 activeTab === tab
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  ? "border-blue-500 text-blue-500 dark:text-blue-400"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
@@ -148,14 +148,14 @@ const DashboardAgent = () => {
             <div className="flex gap-2">
               <button 
                 onClick={() => handleAddTenant()}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-gray-500 hover:bg-gray-800 text-blue-300 px-4 py-2 rounded-lg flex items-center gap-2"
               >
                 <UserPlus size={20} />
                 Add Tenant
               </button>
               <button 
                 onClick={handleGenerateInvite}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-gray-500 hover:bg-gray-800 text-green-300 px-4 py-2 rounded-lg flex items-center gap-2"
               >
                 <Mail size={20} />
                 Invite Tenant
@@ -171,7 +171,7 @@ const DashboardAgent = () => {
                   <p className="text-sm text-gray-500">Owner: {property.owner}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold">${property.monthlyRent}</p>
+                  <p className="text-lg font-bold">Ksh.{property.monthlyRent}</p>
                   <p className="text-sm text-gray-500">Monthly Rent</p>
                 </div>
               </div>
@@ -214,7 +214,7 @@ const DashboardAgent = () => {
                         <p className="text-sm text-gray-500">{tenant.unit} • {tenant.email}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">${tenant.rent}</p>
+                        <p className="font-semibold">Ksh.{tenant.rent}</p>
                         <p className="text-sm text-gray-500">Lease ends: {tenant.leaseEnd}</p>
                       </div>
                     </div>
@@ -232,16 +232,16 @@ const DashboardAgent = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">All Tenants</h2>
             <div className="flex gap-2">
-              <button 
+            <button 
                 onClick={() => handleAddTenant()}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-gray-500 hover:bg-gray-800 text-blue-300 px-4 py-2 rounded-lg flex items-center gap-2"
               >
                 <UserPlus size={20} />
                 Add Tenant
               </button>
               <button 
                 onClick={handleGenerateInvite}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-gray-500 hover:bg-gray-800 text-green-300 px-4 py-2 rounded-lg flex items-center gap-2"
               >
                 <Mail size={20} />
                 Invite Tenant
@@ -272,7 +272,7 @@ const DashboardAgent = () => {
                       </td>
                       <td className="p-3">{property.name}</td>
                       <td className="p-3">{tenant.unit}</td>
-                      <td className="p-3">${tenant.rent}</td>
+                      <td className="p-3">Ksh.{tenant.rent}</td>
                       <td className="p-3">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           tenant.status === 'current' ? 'bg-green-100 text-green-800' :

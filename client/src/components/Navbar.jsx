@@ -58,9 +58,9 @@ const Navbar = () => {
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1 text-red-600 hover:underline"
+                className="flex items-center gap-1 text-red-600 hover:bg-red-300 px-1 py-2 rounded-lg transition"
               >
-                <LogOut size={18} /> Logout
+                <LogOut size={18} />
               </button>
             </>
           ) : (
@@ -68,7 +68,7 @@ const Navbar = () => {
               to="/login"
               className="flex items-center gap-1 hover:underline text-black dark:text-white"
             >
-              <LogIn size={18} /> Login
+               Login
             </Link>
           )}
 
@@ -129,7 +129,7 @@ const Navbar = () => {
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-2 text-black dark:text-white"
             >
-              <LogIn size={18} /> Login
+              Login
             </Link>
           )}
         </div>
