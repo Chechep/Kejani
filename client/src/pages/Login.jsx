@@ -88,7 +88,7 @@ const Login = () => {
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-2 mt-4 border py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition border-gray-400 dark:border-gray-600"
+          className="w-full flex items-center justify-center gap-2 mt-4 border py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition border-gray-400 dark:border-gray-200"
         >
           <img src={GoogleLogo} alt="Google" className="w-5 h-5" />
           <span className="text-black dark:text-white">
