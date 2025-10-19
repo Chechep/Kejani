@@ -300,14 +300,14 @@ const DashboardAgent = () => {
             <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
               <h3 className="font-semibold mb-2">Property Performance</h3>
               <p className="text-sm text-gray-500 mb-3">Overview of all managed properties</p>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm">
+              <button className="bg-gray-500 hover:bg-gray-800 text-blue-300 px-4 py-2 rounded text-sm">
                 Generate Report
               </button>
             </div>
             <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
               <h3 className="font-semibold mb-2">Commission Statement</h3>
               <p className="text-sm text-gray-500 mb-3">Monthly management fees and commissions</p>
-              <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm">
+              <button className="bg-gray-500 hover:bg-gray-800 text-green-400 px-4 py-2 rounded text-sm">
                 Generate Report
               </button>
             </div>
@@ -383,7 +383,7 @@ const DashboardAgent = () => {
                           disabled={!selectedProperty}
                           className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
                             selectedProperty 
-                              ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                              ? 'bg-gray-500 hover:bg-gray-800 text-white'
                               : 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
                           }`}
                         >
@@ -407,7 +407,7 @@ const DashboardAgent = () => {
                       // In real app, this would open a form to create new tenant
                       alert("Open new tenant registration form");
                     }}
-                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-500 hover:bg-gray-800 text-white rounded-lg flex items-center gap-2"
                   >
                     <Plus size={16} />
                     Register New Tenant
@@ -461,7 +461,7 @@ const DashboardAgent = () => {
                       />
                       <button
                         onClick={copyToClipboard}
-                        className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded flex items-center gap-1"
+                        className="px-3 py-2 hover:bg-gray-500 text-black dark:text-white rounded flex items-center gap-1"
                       >
                         <Copy size={16} />
                       </button>
@@ -478,7 +478,7 @@ const DashboardAgent = () => {
                   </button>
                   <button
                     onClick={handleSendInvite}
-                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-green-400 rounded-lg flex items-center gap-2"
                   >
                     <Mail size={16} />
                     Send Invite
